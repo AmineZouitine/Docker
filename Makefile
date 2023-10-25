@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Werror -Wall -Wextra -Wvla -g
+CFLAGS=-std=c99 -pedantic -Werror -Wall -Wextra -Wvla -g -fsanitize=address
 
 OBJS=$(addprefix src/, cgroups_manager.o main.o capabilities_manager.o)
 
@@ -8,7 +8,7 @@ BIN=mymoulette
 all: $(BIN)
 
 $(BIN): $(OBJS)
-	$(CC) $^ -o $@ -lcap
+	$(CC) $^ -o $@ -lcap -fsanitize=address
 	sudo setcap 'cap_sys_admin,cap_dac_override,cap_net_raw+ep' mymoulette
 
 run: $(BIN)
