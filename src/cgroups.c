@@ -1,4 +1,4 @@
-#include "cgroups_manager.h"
+#include "cgroups.h"
 
 #include <err.h>
 #include <stdbool.h>

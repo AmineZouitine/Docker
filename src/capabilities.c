@@ -1,4 +1,4 @@
-#include "capabilities_manager.h"
+#include "capabilities.h"
 
 #include <err.h>
 #include <stdio.h>

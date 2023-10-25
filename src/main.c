@@ -7,8 +7,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "capabilities_manager.h"
-#include "cgroups_manager.h"
+#include "capabilities.h"
+#include "cgroups.h"
 
 int main(int argc, char **argv)
 {
