@@ -7,7 +7,7 @@ BIN=mymoulette
 
 all: $(BIN)
 
-$(BIN): $(OBJS)
+$(BIN): $(OBJS) 
 	$(CC) $^ -o $@ -lcap -fsanitize=address
 	sudo setcap 'cap_sys_admin,cap_dac_override,cap_net_raw+ep' mymoulette
 

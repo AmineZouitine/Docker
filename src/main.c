@@ -16,8 +16,8 @@ int main(int argc, char **argv)
         err(1, "Usage: %s <program_to_run> [args...]\n", argv[0]);
 
     create_cgroup();
-
     set_capability(CAP_NET_RAW);
+
     pid_t pid = fork();
     if (pid < 0)
         err(1, "Failed to fork");

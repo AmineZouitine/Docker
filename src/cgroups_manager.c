@@ -8,6 +8,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #define CGROUP_NAME "moulinette"
 #define BASE_PATH "/sys/fs/cgroup"
@@ -22,6 +23,8 @@
 #define PID_MAX_FILE_NAME "pids.max"
 
 #define PROC_FILE_NAME "cgroup.procs"
+
+#define SUBTREE_CONTROL_FILE_NAME "cgroup.subtree_control"
 
 // Create a dynamic allocated path from a base_path and a extended element
 // (could be a directory name or a file name)
@@ -38,6 +41,49 @@ static char *create_path(const char *base_path, const char *expented)
 
     return path;
 }
+
+// Create and mount cgroupv2 if it don't exist
+static void mount_cgroupv2_if_needed(void)
+{
+    if (access(BASE_PATH, F_OK) == -1)
+    {
+        if (mkdir(BASE_PATH, 0755) == -1)
+        {
+            err(1, "Unable to create directory at %s", BASE_PATH);
+        }
+        if (system("mount -t cgroup2 none " BASE_PATH) != 0)
+        {
+            err(1, "Unable to mount cgroupv2 at %s", BASE_PATH);
+        }
+    }
+}
+
+// cgroup_path is only added to free if there is an error (bad error handling
+// design)
+/*
+static void enable_cpuset_controller(char *base_path, char
+*subtree_controller_name, char *cgroup_path) {
+
+    char *subtree_control_path = create_path(base_path,
+subtree_controller_name); FILE *file = fopen(subtree_control_path, "r+");
+    free(subtree_control_path);
+
+    if (!file)
+    {
+       free(cgroup_path);
+       err(1, "Unable to open subtree control file at %s/%s", base_path,
+subtree_controller_name);
+    }
+
+    if (fseek(file, 0, SEEK_END) == -1)
+    {
+        free(cgroup_path);
+        err(1, "Unable to fseek a the end of this file %s/%s", base_path,
+subtree_controller_name);
+    }
+    fprintf(file, " cpuset");
+}
+*/
 
 // Create the cgroup folder in the right path if not exist and return a boolean
 // to notify if the path folder already exist
@@ -79,6 +125,7 @@ static void set_cgroup_attribute(char *cgroup_path, char *attribute_name,
 
 void create_cgroup(void)
 {
+    mount_cgroupv2_if_needed();
     char *cgroup_path = create_path(BASE_PATH, CGROUP_NAME);
 
     bool folder_exist = create_cgroup_directory(cgroup_path);
