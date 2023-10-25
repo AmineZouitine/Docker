@@ -6,27 +6,6 @@
 #include <sys/capability.h>
 #include <sys/prctl.h>
 
-void clear_capability(void)
-{
-    cap_t caps = cap_get_proc();
-    if (!caps)
-    {
-        err(1, "Failed to get capabilities");
-    }
-    if (cap_clear(caps) == -1)
-    {
-        cap_free(caps);
-        err(1, "Failed to clear capabilities");
-    }
-    if (cap_set_proc(caps) == -1)
-    {
-        cap_free(caps);
-        err(1, "Failed to set capabilities");
-    }
-
-    cap_free(caps);
-}
-
 void set_capability(cap_value_t cap)
 {
     cap_t caps = cap_get_proc();
