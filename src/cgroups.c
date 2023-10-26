@@ -48,13 +48,9 @@ static void mount_cgroupv2_if_needed(void)
     if (access(BASE_PATH, F_OK) == -1)
     {
         if (mkdir(BASE_PATH, 0755) == -1)
-        {
             err(1, "Unable to create directory at %s", BASE_PATH);
-        }
         if (system("mount -t cgroup2 none " BASE_PATH) != 0)
-        {
             err(1, "Unable to mount cgroupv2 at %s", BASE_PATH);
-        }
     }
 }
 

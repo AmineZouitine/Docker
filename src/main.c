@@ -10,6 +10,8 @@
 #include "capabilities.h"
 #include "cgroups.h"
 #include "chroot.h"
+#include "seccomp.h"
+#include "seccomp_filter.h"
 
 int main(int argc, char **argv)
 {
@@ -29,6 +31,7 @@ int main(int argc, char **argv)
         add_process_to_cgroup(current_pid);
 
         do_chroot(argv[1]);
+        create_seccomp_filter();
 
         execvp(argv[2], &argv[2]);
         err(1, "Failed to lauch %s program", argv[2]);
