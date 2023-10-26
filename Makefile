@@ -10,6 +10,7 @@ all: $(BIN)
 
 $(BIN): $(OBJS)
 	$(CC) $^ -o $@ $(LDFLAGS) 
+
 	sudo setcap 'cap_sys_chroot,cap_sys_admin,cap_dac_override,cap_net_raw+ep' mymoulette
 
 run: $(BIN)

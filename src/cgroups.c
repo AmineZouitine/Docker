@@ -24,8 +24,6 @@
 
 #define PROC_FILE_NAME "cgroup.procs"
 
-#define SUBTREE_CONTROL_FILE_NAME "cgroup.subtree_control"
-
 // Create a dynamic allocated path from a base_path and a extended element
 // (could be a directory name or a file name)
 static char *create_path(const char *base_path, const char *expended)
