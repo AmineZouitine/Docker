@@ -28,16 +28,16 @@
 
 // Create a dynamic allocated path from a base_path and a extended element
 // (could be a directory name or a file name)
-static char *create_path(const char *base_path, const char *expented)
+static char *create_path(const char *base_path, const char *expended)
 {
-    const size_t len_cgroup_name = strlen(base_path);
-    const size_t len_base_path = strlen(expented);
+    const size_t len_base_path = strlen(base_path);
+    const size_t len_expended = strlen(expended);
 
     const size_t path_memory_size =
-        sizeof(char) * len_base_path + len_cgroup_name + 2;
+        sizeof(char) * len_base_path + len_expended + 2;
     char *path = malloc(path_memory_size);
 
-    snprintf(path, path_memory_size, "%s/%s", base_path, expented);
+    snprintf(path, path_memory_size, "%s/%s", base_path, expended);
 
     return path;
 }
@@ -57,33 +57,6 @@ static void mount_cgroupv2_if_needed(void)
         }
     }
 }
-
-// cgroup_path is only added to free if there is an error (bad error handling
-// design)
-/*
-static void enable_cpuset_controller(char *base_path, char
-*subtree_controller_name, char *cgroup_path) {
-
-    char *subtree_control_path = create_path(base_path,
-subtree_controller_name); FILE *file = fopen(subtree_control_path, "r+");
-    free(subtree_control_path);
-
-    if (!file)
-    {
-       free(cgroup_path);
-       err(1, "Unable to open subtree control file at %s/%s", base_path,
-subtree_controller_name);
-    }
-
-    if (fseek(file, 0, SEEK_END) == -1)
-    {
-        free(cgroup_path);
-        err(1, "Unable to fseek a the end of this file %s/%s", base_path,
-subtree_controller_name);
-    }
-    fprintf(file, " cpuset");
-}
-*/
 
 // Create the cgroup folder in the right path if not exist and return a boolean
 // to notify if the path folder already exist
