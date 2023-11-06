@@ -1,8 +1,8 @@
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Werror -Wall -Wextra -Wvla -g -fsanitize=address
-LDFLAGS=-fsanitize=address -lcap -lseccomp
+CFLAGS=-std=c99 -pedantic -Werror -Wall -Wextra -Wvla -g3 -fsanitize=address
+LDFLAGS=-fsanitize=address -lcap -lseccomp -lcurl -ljansson -larchive 
 
-OBJS=$(addprefix src/, cgroups.o main.o capabilities.o chroot.o seccomp_filter.o)
+OBJS=$(addprefix src/, cgroups.o main.o capabilities.o chroot.o seccomp_filter.o oci_json_handler.o)
 
 BIN=mymoulette
 

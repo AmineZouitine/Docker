@@ -12,11 +12,16 @@
 #include "chroot.h"
 #include "seccomp.h"
 #include "seccomp_filter.h"
+#include "oci_json_handler.h"
 
 int main(int argc, char **argv)
 {
+    get_url_to_image_tarball("library/alpine", "latest");
     if (argc != 3)
         err(1, "Usage: %s <chroot_path> <program_to_run>\n", argv[0]);
+
+    char *new_rootfs = argv[1];
+    char *program_to_run = argv[2];
 
     create_cgroup();
 
@@ -30,11 +35,11 @@ int main(int argc, char **argv)
         pid_t current_pid = getpid();
         add_process_to_cgroup(current_pid);
 
-        do_chroot(argv[1]);
+        do_chroot(new_rootfs);
         create_seccomp_filter();
 
-        execvp(argv[2], &argv[2]);
-        err(1, "Failed to lauch %s program", argv[2]);
+        execvp(program_to_run, &program_to_run);
+        err(1, "Failed to lauch %s program", program_to_run);
     }
 
     int status;
