@@ -229,41 +229,7 @@ static void get_image_manifest(CURL *curl, struct curl_slist **headers, const ch
 }
 
 
-// static void get_layer_manifest(CURL *curl, struct curl_slist **headers, const char *image_name)
-// {
-//     add_authentification_header(headers);
-
-
-//     size_t total_size = strlen(BASE_MANIFEST_PATH) + strlen(image_name) + 1 + strlen("blobs") + 1 + strlen(request_informations.request_datas.cnf_digest) + 1;
-//     char *manifest_url = calloc(total_size, sizeof(char));
-//     sprintf(manifest_url, "%s%s/blobs/%s", BASE_MANIFEST_PATH, image_name, request_informations.request_datas.cnf_digest);
-
-//     request_and_save_response(curl, *headers, manifest_url);
-//     free(manifest_url);
-//     printf("\n\n%s\n\n", http_response);
-//     json_t *root = init_json();
-
-//     json_t *rootfs = json_object_get(root, "rootfs");
-//     if (rootfs != NULL) {
-//         json_t *diff_ids = json_object_get(rootfs, "diff_ids");
-//         if (diff_ids != NULL && json_is_array(diff_ids)) {
-//             json_t *layer_digest_json = json_array_get(diff_ids, 0);
-//             if (layer_digest_json != NULL && json_is_string(layer_digest_json)) {
-//                 const char *layer_digest = json_string_value(layer_digest_json);
-//                 request_informations.request_datas.layer_digest = strdup(layer_digest);
-//             }
-//         }
-//     }
-    
-
-//     json_decref(root);
-//     reset_http_response();
-//     curl_slist_free_all(*headers);
-//     *headers = NULL;
-// }
-
-
-static void dowload_file(CURL *curl, struct curl_slist **headers, const char *image_name)
+static void download_file(CURL *curl, struct curl_slist **headers, const char *image_name)
 {
     add_authentification_header(headers);
 
@@ -281,8 +247,7 @@ static void dowload_file(CURL *curl, struct curl_slist **headers, const char *im
 
 static CURL *init_curl(void)
 {
-    CURL *curl = NULL;
-    curl = curl_easy_init();
+    CURL *curl = curl_easy_init();
     if (!curl)
         err(1, "Unable to init curl");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
@@ -292,15 +257,14 @@ static CURL *init_curl(void)
     return curl;
 }
 
-static CURL *curl_dowload_setup(FILE* fd)
+static CURL *curl_download_setup(FILE* fd)
 {
-    CURL *curl = NULL;
-    curl = curl_easy_init();
+    CURL *curl = curl_easy_init();
     if (!curl)
         err(1, "Unable to init curl");
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, fd);
-
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     return curl;
 }
 
@@ -381,15 +345,14 @@ char *get_url_to_image_tarball(const char *image_name, const char *tag_name)
     free(request_informations.headers.accept);
     set_mediatype_accept_header();
     get_image_manifest(curl, &headers, image_name);
-    // get_layer_manifest(curl, &headers, image_name);
-
     curl_easy_cleanup(curl);
+
     FILE *file = get_random_path_file();
-    curl = curl_dowload_setup(file);
-    print_request_data();
-    dowload_file(curl, &headers, image_name);
+    curl = curl_download_setup(file);
+    download_file(curl, &headers, image_name);
     fclose(file);
     free_request_data();
+
     return NULL;
 
 
