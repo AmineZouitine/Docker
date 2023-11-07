@@ -48,21 +48,6 @@ static void free_request_data(void){
     free(request_informations.headers.accept);
 }
 
-static void print_request_data(void)
-{
-    printf("[HEADER]\n\n");
-    printf("authorization: [%s]\n\n", request_informations.headers.authorization);
-    printf("accept: [%s]\n\n", request_informations.headers.accept);
-
-    printf("[DATA]\n\n");
-    printf("token: [%s]\n\n", request_informations.request_datas.token);
-    printf("mediatype: [%s]\n", request_informations.request_datas.mediatype);
-    printf("mnfst_dgst: [%s]\n", request_informations.request_datas.mnfst_dgst);
-    printf("cnf_digest: [%s]\n", request_informations.request_datas.cnf_digest);
-    printf("layer_digest [%s]\n", request_informations.request_datas.layer_digest);
-    puts("\n\n");
-}
-
 static void reset_http_response(void)
 {
     free(http_response);
@@ -354,6 +339,4 @@ char *get_url_to_image_tarball(const char *image_name, const char *tag_name)
     free_request_data();
 
     return NULL;
-
-
 }

@@ -13,13 +13,14 @@
 #include "seccomp.h"
 #include "seccomp_filter.h"
 #include "oci_json_handler.h"
+#include "arguments.h"
 
-int main(int argc, char **argv)
+int main(__attribute__((unused)) int argc, char **argv)
 {
+    struct arguments_datas *arguments_datas = get_arguments(argv);
+    printf("%s\n", arguments_datas->oci_image);
+    return 0;
     get_url_to_image_tarball("library/alpine", "latest");
-    if (argc != 3)
-        err(1, "Usage: %s <chroot_path> <program_to_run>\n", argv[0]);
-
     char *new_rootfs = argv[1];
     char *program_to_run = argv[2];
 
