@@ -15,15 +15,13 @@
 #include "oci_json_handler.h"
 #include "arguments.h"
 
-int main(__attribute__((unused)) int argc, char **argv)
+int main(int argc, char **argv)
 {
     struct arguments_datas *arguments_datas = get_arguments(argv);
-    printf("%s\n", arguments_datas->oci_image);
-    return 0;
-    get_url_to_image_tarball("library/alpine", "latest");
-    char *new_rootfs = argv[1];
-    char *program_to_run = argv[2];
 
+    char *new_rootfs = get_url_to_image_tarball(arguments_datas->oci_image.image_name, arguments_datas->oci_image.tag);
+
+    printf(new_rootfs);
     create_cgroup();
 
     set_capability(CAP_NET_RAW);
@@ -39,8 +37,8 @@ int main(__attribute__((unused)) int argc, char **argv)
         do_chroot(new_rootfs);
         create_seccomp_filter();
 
-        execvp(program_to_run, &program_to_run);
-        err(1, "Failed to lauch %s program", program_to_run);
+        execvp(argv[arguments_datas->program_name_index], &argv[arguments_datas->program_name_index]);
+        err(1, "Failed to lauch %s program", argv[arguments_datas->program_name_index]);
     }
 
     int status;

@@ -295,7 +295,7 @@ static void set_mediatype_accept_header(void)
     sprintf(request_informations.headers.accept, "%s %s", BASE_MEDIATYPE_ACCEPT_HEADERS, request_informations.request_datas.mediatype);
 }
 
-static FILE *get_random_path_file(void)
+static char *get_random_path_folder(void)
 {
     char template[] = "/tmp/exampleXXXXXX";
 
@@ -306,18 +306,33 @@ static FILE *get_random_path_file(void)
     char *new_path = malloc(sizeof(char) * new_path_size);
 
     sprintf(new_path, "%s/%s", template, "layer.tar.gz");
-    FILE *fd = fopen(new_path, "ab");
+
+    return new_path;
+}
+
+
+static FILE *open_path(char *path)
+{
+    FILE *fd = fopen(path, "ab");
 
     if (!fd)
         err(1, "failed to open file");
 
-    printf("New path %s\n", new_path);
-    free(new_path);
-
+    printf("New path %s\n", path);
+    free(path);
 
     return fd;
 }
 
+static char *get_target_command(char *src, char *dest)
+{
+    size_t new_path_size = strlen("tar xvzf ") + strlen(src) + 1 + strlen("-C") + 1 + strlen(dest) + 1;
+    char *new_path = malloc(sizeof(char) * new_path_size);
+
+    sprintf(new_path, "tar xvzf %s -C %s", src, dest);
+
+    return new_path;
+}
 
 char *get_url_to_image_tarball(const char *image_name, const char *tag_name)
 {
@@ -332,11 +347,20 @@ char *get_url_to_image_tarball(const char *image_name, const char *tag_name)
     get_image_manifest(curl, &headers, image_name);
     curl_easy_cleanup(curl);
 
-    FILE *file = get_random_path_file();
-    curl = curl_download_setup(file);
+    char *path_new_dir = get_random_path_folder();
+    FILE *new_dir = open_path(path_new_dir);
+
+    curl = curl_download_setup(new_dir);
+
     download_file(curl, &headers, image_name);
-    fclose(file);
+
+    char *new_rootfs = get_random_path_folder();
+    
+    char *tar_command = get_target_command(path_new_dir, new_rootfs);
+    system(tar_command);
+    free(tar_command);
+    fclose(new_dir);
     free_request_data();
 
-    return NULL;
+    return new_rootfs;
 }

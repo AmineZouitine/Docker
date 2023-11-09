@@ -1,13 +1,16 @@
 #pragma once
 
-struct program {
-    char *program_name;
-    char **program_arguments;
+#include <stddef.h>
+
+struct oci_image 
+{
+    char *image_name;
+    char *tag;
 };
 
 struct arguments_datas{
-    char *oci_image;
-    struct program program;
+    struct oci_image oci_image;
+    size_t program_name_index;
 };
 
 
