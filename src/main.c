@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <err.h>
 #include <linux/capability.h>
 #include <stdio.h>
@@ -14,35 +15,42 @@
 #include "oci_json_handler.h"
 #include "seccomp.h"
 #include "seccomp_filter.h"
+#include <sched.h>
 
-int main(__attribute__((unused)) int argc, char **argv)
-{
-    struct arguments_datas *arguments_datas = get_arguments(argv);
 
-    char *new_rootfs = get_url_to_image_tarball(
-        arguments_datas->oci_image.image_name, arguments_datas->oci_image.tag);
+#define STACK_SIZE (1024 * 1024)
+
+int child_func(void *arg) {
+    char **argv = (char **)arg;
+
+    do_chroot(argv[0]);
+    create_seccomp_filter();
+
+    execvp(argv[1],
+           &argv[1]);
+    err(1, "Failed to launch program");
+}
+
+int main(__attribute__((unused)) int argc, char **argv) {
+
+    char **new_argv = get_arguments(argv);
 
     create_cgroup();
-
     set_capability(CAP_NET_RAW);
 
-    pid_t pid = fork();
-    if (pid < 0)
-        err(1, "Failed to fork");
-    else if (pid == 0)
-    {
-        pid_t current_pid = getpid();
-        add_process_to_cgroup(current_pid);
+    char *stack = malloc(STACK_SIZE);
+    if (!stack) {
+        err(1, "Failed to allocate stack for the cloned process");
+    }
 
-        do_chroot(new_rootfs);
-        create_seccomp_filter();
-
-        execvp(argv[arguments_datas->program_name_index],
-               &argv[arguments_datas->program_name_index]);
-        err(1, "Failed to lauch %s program",
-            argv[arguments_datas->program_name_index]);
+    int clone_flags = CLONE_NEWCGROUP | CLONE_NEWIPC | CLONE_NEWNS | 
+                      CLONE_NEWNET | CLONE_NEWPID | CLONE_NEWUTS | SIGCHLD;
+    pid_t pid = clone(child_func, stack + STACK_SIZE, clone_flags, new_argv);
+    if (pid == -1) {
+        err(1, "Failed to clone");
     }
 
     int status;
     waitpid(pid, &status, 0);
+    free(stack);
 }
