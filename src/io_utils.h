@@ -14,3 +14,11 @@ char *create_path(const char *base_path, const char *expended);
 bool create_directory(char *directory_path);
 
 int extract_tar(const char *tar_path, const char *output_directory);
+
+void mount_sysfs(void);
+
+void mount_tmpfs(void);
+
+void mount_procfs(void);
+
+

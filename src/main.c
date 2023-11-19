@@ -15,6 +15,7 @@
 #include "oci_json_handler.h"
 #include "seccomp.h"
 #include "seccomp_filter.h"
+#include "io_utils.h"
 #include <sched.h>
 
 
@@ -24,6 +25,10 @@ int child_func(void *arg) {
     char **argv = (char **)arg;
 
     do_chroot(argv[0]);
+
+    mount_procfs();
+    mount_sysfs();
+    mount_tmpfs();
     create_seccomp_filter();
 
     execvp(argv[1],
@@ -49,6 +54,8 @@ int main(__attribute__((unused)) int argc, char **argv) {
     if (pid == -1) {
         err(1, "Failed to clone");
     }
+
+    add_process_to_cgroup(pid);
 
     int status;
     waitpid(pid, &status, 0);

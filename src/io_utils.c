@@ -1,6 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 #include "io_utils.h"
-
+#include <sys/mount.h>
 #include <archive.h>
 #include <archive_entry.h>
 #include <err.h>
@@ -171,4 +171,22 @@ int extract_tar(const char *tar_path, const char *output_directory)
     archive_write_close(ext);
     archive_write_free(ext);
     return ARCHIVE_OK;
+}
+
+void mount_sysfs() {
+    if (mount("sysfs", "/sys", "sysfs", 0, NULL) == -1) {
+        err(1, "Error mounting sysfs");
+    }
+}
+
+void mount_tmpfs() {
+    if (mount("tmpfs", "/tmp", "tmpfs", 0, NULL) == -1) {
+        err(1, "Error mounting tmpfs");
+    }
+}
+
+void mount_procfs() {
+    if (mount("proc", "/proc", "proc", 0, NULL) == -1) {
+        err(1, "Error mounting procfs");
+    }
 }

@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Wall -Werror -Wextra -Wvla -g3 -fsanitize=address
-LDFLAGS=-fsanitize=address -lcap -lseccomp -lcurl -ljansson -larchive 
+CFLAGS=-std=c99 -pedantic -Wall -Werror -Wextra -Wvla -g
+LDFLAGS=-lcap -lseccomp -lcurl -ljansson -larchive 
 
 OBJS=$(addprefix src/, io_utils.o json_utils.o curl_utils.o request_informations.o arguments.o cgroups.o main.o capabilities.o chroot.o seccomp_filter.o oci_json_handler.o)
 
