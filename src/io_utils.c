@@ -29,7 +29,6 @@ FILE *open_path(char *path)
     if (!fd)
         err(1, "failed to open file");
 
-    printf("New path %s\n", path);
     return fd;
 }
 
@@ -131,10 +130,6 @@ int extract_tar(const char *tar_path, const char *output_directory)
         if (result == ARCHIVE_EOF)
         {
             break;
-        }
-        if (result < ARCHIVE_OK)
-        {
-            fprintf(stderr, "%s\n", archive_error_string(a));
         }
         if (result < ARCHIVE_WARN)
         {
