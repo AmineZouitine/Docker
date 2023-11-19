@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "oci_json_handler.h"
 
 #define USAGE_MESSAGE "Usage: %s <chroot_path> <program_to_run>\n"
@@ -16,8 +17,7 @@ static bool is_image_option(char *argument)
 
 static char **init_args(void)
 {
-    char **argv =
-        calloc(1, sizeof(char *));
+    char **argv = calloc(1, sizeof(char *));
     if (!argv)
         err(1, "Unable to allocate memory for arguments data");
 
@@ -25,17 +25,18 @@ static char **init_args(void)
     return argv;
 }
 
-static void add_new_data(char ***argv, char *new_data, size_t *current_size) {
+static void add_new_data(char ***argv, char *new_data, size_t *current_size)
+{
     (*argv)[*current_size - 1] = new_data;
     char **temp = realloc(*argv, ++(*current_size) * sizeof(char *));
-    if (!temp) {
+    if (!temp)
+    {
         free(*argv);
         err(1, "Unable to reallocate memory for arguments data");
     }
     *argv = temp;
     (*argv)[*current_size - 1] = NULL;
 }
-
 
 static void parse_oci_image(char *oci_image, char ***argv, size_t *current_size)
 {
@@ -45,8 +46,7 @@ static void parse_oci_image(char *oci_image, char ***argv, size_t *current_size)
     char *image = strtok_r(oci_image, delim, &saveptr);
     char *tag = strtok_r(NULL, delim, &saveptr);
 
-    char *new_rootfs = get_url_to_image_tarball(
-        image, tag);
+    char *new_rootfs = get_url_to_image_tarball(image, tag);
 
     add_new_data(argv, new_rootfs, current_size);
 }

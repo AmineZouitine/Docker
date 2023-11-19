@@ -21,5 +21,4 @@ void mount_tmpfs(void);
 
 void mount_procfs(void);
 
-
 void set_container_hostname();

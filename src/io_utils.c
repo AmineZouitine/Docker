@@ -9,8 +9,8 @@
 #include <string.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
 
 char *create_tmp_folder(void)
 {
@@ -177,39 +177,50 @@ int extract_tar(const char *tar_path, const char *output_directory)
     return ARCHIVE_OK;
 }
 
-void mount_sysfs() {
-    if (mount("sysfs", "/sys", "sysfs", 0, NULL) == -1) {
+void mount_sysfs()
+{
+    if (mount("sysfs", "/sys", "sysfs", 0, NULL) == -1)
+    {
         err(1, "Error mounting sysfs");
     }
 }
 
-void mount_tmpfs() {
-    if (mount("tmpfs", "/tmp", "tmpfs", 0, NULL) == -1) {
+void mount_tmpfs()
+{
+    if (mount("tmpfs", "/tmp", "tmpfs", 0, NULL) == -1)
+    {
         err(1, "Error mounting tmpfs");
     }
 }
 
-void mount_procfs() {
-    if (mount("proc", "/proc", "proc", 0, NULL) == -1) {
+void mount_procfs()
+{
+    if (mount("proc", "/proc", "proc", 0, NULL) == -1)
+    {
         err(1, "Error mounting procfs");
     }
 }
 
-static void generate_random_hostname(char *hostname, size_t length) {
-    const char *charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static void generate_random_hostname(char *hostname, size_t length)
+{
+    const char *charset =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     srand(time(NULL));
-    if (length) {
+    if (length)
+    {
         --length;
-        for (size_t n = 0; n < length; n++) {
-            int key = rand() % (int) (strlen(charset));
+        for (size_t n = 0; n < length; n++)
+        {
+            int key = rand() % (int)(strlen(charset));
             hostname[n] = charset[key];
         }
         hostname[length] = '\0';
     }
 }
 
-void set_container_hostname() {
+void set_container_hostname()
+{
     char hostname[12];
     generate_random_hostname(hostname, sizeof(hostname));
     sethostname(hostname, strlen(hostname));
