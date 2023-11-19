@@ -30,6 +30,7 @@ int child_func(void *arg) {
     mount_sysfs();
     mount_tmpfs();
     create_seccomp_filter();
+    set_container_hostname();
 
     execvp(argv[1],
            &argv[1]);

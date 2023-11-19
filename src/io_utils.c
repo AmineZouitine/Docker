@@ -1,12 +1,16 @@
 #define _POSIX_C_SOURCE 200809L
+#define _GNU_SOURCE
 #include "io_utils.h"
-#include <sys/mount.h>
+
 #include <archive.h>
 #include <archive_entry.h>
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mount.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <time.h>
 
 char *create_tmp_folder(void)
 {
@@ -189,4 +193,24 @@ void mount_procfs() {
     if (mount("proc", "/proc", "proc", 0, NULL) == -1) {
         err(1, "Error mounting procfs");
     }
+}
+
+static void generate_random_hostname(char *hostname, size_t length) {
+    const char *charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    srand(time(NULL));
+    if (length) {
+        --length;
+        for (size_t n = 0; n < length; n++) {
+            int key = rand() % (int) (strlen(charset));
+            hostname[n] = charset[key];
+        }
+        hostname[length] = '\0';
+    }
+}
+
+void set_container_hostname() {
+    char hostname[12];
+    generate_random_hostname(hostname, sizeof(hostname));
+    sethostname(hostname, strlen(hostname));
 }
