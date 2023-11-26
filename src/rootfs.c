@@ -1,5 +1,5 @@
 #define _GNU_SOURCE
-#include "chroot.h"
+#include "rootfs.h"
 
 #include <err.h>
 #include <stdlib.h>
@@ -11,15 +11,6 @@
 
 #include "io_utils.h"
 #define OLD_ROOT_NAME "old_root"
-
-void do_chroot(const char *path)
-{
-    if (chroot(path) == -1)
-        err(1, "Unable to chroot on this path: %s", path);
-
-    if (chdir("/") == -1)
-        err(1, "Unable to chdir in / on this path: %s", path);
-}
 
 void do_pivot_root(const char *path)
 {

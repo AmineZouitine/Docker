@@ -200,7 +200,7 @@ char *get_url_to_image_tarball(const char *image_name, const char *tag_name)
 
     char *tmp_folder_path = create_tmp_folder();
     char *download_path = create_path(tmp_folder_path, OCI_FILE_NAME);
-    FILE *new_dir = open_path(download_path);
+    FILE *new_dir = open_path(download_path, "wb");
     curl = curl_download_setup(new_dir);
     download_file(curl, &headers, image_name);
     char *rootfs_directory_path = create_path(tmp_folder_path, ROOTFS);

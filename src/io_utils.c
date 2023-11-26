@@ -12,6 +12,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#define HOST_NAME_SIZE 12
+
 char *create_tmp_folder(void)
 {
     char *template = strdup("/tmp/exampleXXXXXX");
@@ -22,9 +24,9 @@ char *create_tmp_folder(void)
     return template;
 }
 
-FILE *open_path(char *path)
+FILE *open_path(char *path, const char *mode)
 {
-    FILE *fd = fopen(path, "ab");
+    FILE *fd = fopen(path, mode);
 
     if (!fd)
         err(1, "failed to open file");
@@ -216,7 +218,13 @@ static void generate_random_hostname(char *hostname, size_t length)
 
 void set_container_hostname()
 {
-    char hostname[12];
+    char hostname[HOST_NAME_SIZE];
     generate_random_hostname(hostname, sizeof(hostname));
     sethostname(hostname, strlen(hostname));
+}
+
+bool valid_dir(const char *dir_path)
+{
+    struct stat st;
+    return stat(dir_path, &st) != -1;
 }

@@ -12,9 +12,9 @@
 #include "arguments.h"
 #include "capabilities.h"
 #include "cgroups.h"
-#include "chroot.h"
 #include "io_utils.h"
 #include "oci_json_handler.h"
+#include "rootfs.h"
 #include "seccomp.h"
 #include "seccomp_filter.h"
 
@@ -25,7 +25,6 @@ int child_func(void *arg)
     char **argv = (char **)arg;
 
     do_pivot_root(argv[0]);
-
     mount_procfs();
     mount_sysfs();
     mount_tmpfs();

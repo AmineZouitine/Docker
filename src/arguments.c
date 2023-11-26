@@ -3,10 +3,11 @@
 
 #include <err.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
+#include "io_utils.h"
 #include "oci_json_handler.h"
 
 static bool is_image_option(char *argument)
@@ -27,7 +28,8 @@ static void handle_help_option(int exit_code)
            "already be in the environment\n");
     exit(exit_code);
 }
-static bool is_help_option(char *argument) {
+static bool is_help_option(char *argument)
+{
     return strcmp(argument, "-h") == 0;
 }
 
@@ -94,7 +96,10 @@ char **get_arguments(char **argv)
                 free(new_argv);
                 handle_help_option(1);
             }
-            parse_oci_image(argv[++i], &new_argv, &current_size);
+            if (valid_dir(argv[i + 1]))
+                add_new_data(&new_argv, argv[++i], &current_size);
+            else
+                parse_oci_image(argv[++i], &new_argv, &current_size);
             image_argument_found = true;
         }
         else

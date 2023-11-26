@@ -5,7 +5,7 @@
 
 char *create_tmp_folder(void);
 
-FILE *open_path(char *path);
+FILE *open_path(char *path, const char *mode);
 
 char *get_target_command(char *src, char *dest);
 
@@ -14,6 +14,8 @@ char *create_path(const char *base_path, const char *expended);
 bool create_directory(char *directory_path);
 
 int extract_tar(const char *tar_path, const char *output_directory);
+
+bool valid_dir(const char *dir_path);
 
 void mount_sysfs(void);
 
