@@ -62,15 +62,11 @@ void create_cgroup(void)
     mount_cgroupv2_if_needed();
     char *cgroup_path = create_path(BASE_PATH, CGROUP_NAME);
 
-    bool folder_exist = create_directory(cgroup_path);
+    create_directory(cgroup_path);
 
-    if (!folder_exist)
-    {
-        set_cgroup_attribute(cgroup_path, MEMORY_MAX_FILE_NAME, MAX_MEMORY);
-        set_cgroup_attribute(cgroup_path, CPUSET_CPUS_FILE_NAME,
-                             CPUSET_CPUS_VALUE);
-        set_cgroup_attribute(cgroup_path, PID_MAX_FILE_NAME, MAX_PID);
-    }
+    set_cgroup_attribute(cgroup_path, MEMORY_MAX_FILE_NAME, MAX_MEMORY);
+    set_cgroup_attribute(cgroup_path, CPUSET_CPUS_FILE_NAME, CPUSET_CPUS_VALUE);
+    set_cgroup_attribute(cgroup_path, PID_MAX_FILE_NAME, MAX_PID);
 
     free(cgroup_path);
 }
